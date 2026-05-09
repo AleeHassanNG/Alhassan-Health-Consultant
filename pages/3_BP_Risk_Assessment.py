@@ -124,7 +124,6 @@ def train_model():
 
     model = LogisticRegression(
         C=0.1,
-        multi_class='auto',
         penalty='l1',
         solver='liblinear',
         max_iter=1000
