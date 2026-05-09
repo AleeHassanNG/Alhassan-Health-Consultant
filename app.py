@@ -214,7 +214,7 @@ diagnosis, or treatment.
 st.markdown("""
 <div class="footer">
 
-Developed by <b>Alhassan Health Analytics Lab</b><br>
+Developed by <b>Alhassan Aliyu Akare</b><br>
 
 Powered by Streamlit & Scikit-Learn
 
