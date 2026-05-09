@@ -15,5 +15,3 @@ This platform provides preliminary health assessments based on patient informati
 
 ⚠️ This system is for educational and screening purposes only and does not replace professional medical diagnosis.
 """)
-
-st.info("Select a service from the sidebar.")
