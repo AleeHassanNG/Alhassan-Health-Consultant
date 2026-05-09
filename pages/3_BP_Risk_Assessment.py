@@ -5,31 +5,42 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
+# ---------------------------------------------------
+# PAGE TITLE
+# ---------------------------------------------------
+
 st.title("BP Risk Assessment")
 
 st.write("""
-This module evaluates and approximates your Blood Pressure (BP) risk level.
+This module evaluates and predicts your Blood Pressure (BP) risk category.
 """)
 
-# Load Dataset
+# ---------------------------------------------------
+# LOAD DATA
+# ---------------------------------------------------
+
 df = pd.read_csv("weight-height.csv")
 
-# -----------------------------
-# DATA PREPROCESSING
-# -----------------------------
+# ---------------------------------------------------
+# TARGET ENCODING
+# ---------------------------------------------------
 
-def cc_score(cc):
+def bp_score(bp):
 
-    if cc == 'Normal':
+    if bp == 'Normal':
         return 0
 
-    elif cc == 'Elevated':
+    elif bp == 'Elevated':
         return 1
 
     else:
         return 2
 
-df['BP'] = df['BP_Category'].apply(cc_score)
+df['BP'] = df['BP_Category'].apply(bp_score)
+
+# ---------------------------------------------------
+# FEATURE ENCODING
+# ---------------------------------------------------
 
 df['Smoker_'] = df['Smoker'].apply(
     lambda x: 1 if x.lower() == 'yes' else 0
@@ -39,15 +50,15 @@ df['Gender_'] = df['Gender'].apply(
     lambda x: 1 if x.lower() == 'male' else 0
 )
 
-def activity_score(act):
+def activity_score(activity):
 
-    if act == 'Very Active':
+    if activity == 'Very Active':
         return 0
 
-    elif act == 'Moderately Active':
+    elif activity == 'Moderately Active':
         return 1
 
-    elif act == 'Lightly Active':
+    elif activity == 'Lightly Active':
         return 2
 
     else:
@@ -55,34 +66,34 @@ def activity_score(act):
 
 df['Activity'] = df['Activity_Level'].apply(activity_score)
 
-# -----------------------------
-# REMOVE OUTLIERS
-# -----------------------------
+# ---------------------------------------------------
+# OUTLIER REMOVAL
+# ---------------------------------------------------
 
-def filter_outlier(df, column):
+def filter_outlier(dataframe, column):
 
-    Q1 = df[column].quantile(0.25)
-    Q3 = df[column].quantile(0.75)
+    Q1 = dataframe[column].quantile(0.25)
+    Q3 = dataframe[column].quantile(0.75)
 
     IQR = Q3 - Q1
 
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
+    lower = Q1 - 1.5 * IQR
+    upper = Q3 + 1.5 * IQR
 
-    return df[
-        (df[column] >= lower_bound) &
-        (df[column] <= upper_bound)
+    return dataframe[
+        (dataframe[column] >= lower) &
+        (dataframe[column] <= upper)
     ]
 
-df_l = filter_outlier(df, 'Diastolic_BP')
-df_l = filter_outlier(df_l, 'Systolic_BP')
-df_l = filter_outlier(df_l, 'BMI')
+df_clean = filter_outlier(df, 'Diastolic_BP')
+df_clean = filter_outlier(df_clean, 'Systolic_BP')
+df_clean = filter_outlier(df_clean, 'BMI')
 
-# -----------------------------
-# FEATURES
-# -----------------------------
+# ---------------------------------------------------
+# FEATURES & TARGET
+# ---------------------------------------------------
 
-X = df_l[
+X = df_clean[
     [
         'Diastolic_BP',
         'BMI',
@@ -94,78 +105,78 @@ X = df_l[
     ]
 ]
 
-Y = df_l['BP']
+y = df_clean['BP']
 
-# -----------------------------
+# ---------------------------------------------------
 # TRAIN TEST SPLIT
-# -----------------------------
+# ---------------------------------------------------
 
 x_train, x_test, y_train, y_test = train_test_split(
     X,
-    Y,
+    y,
     test_size=0.30,
     random_state=42
 )
 
-# -----------------------------
-# STANDARDIZATION
-# -----------------------------
+# ---------------------------------------------------
+# SCALING
+# ---------------------------------------------------
 
 scaler = StandardScaler()
 
-x_train_s = scaler.fit_transform(x_train)
+x_train_scaled = scaler.fit_transform(x_train)
 
-# -----------------------------
-# MODEL
-# -----------------------------
+# ---------------------------------------------------
+# MODEL TRAINING
+# ---------------------------------------------------
 
 @st.cache_resource
 def train_model():
 
-     model = LogisticRegression(
+    model = LogisticRegression(
         C=0.1,
         penalty='l2',
         solver='lbfgs',
         max_iter=1000
     )
 
-    model.fit(x_train_s, y_train)
+    model.fit(x_train_scaled, y_train)
 
     return model
 
 model = train_model()
 
-# -----------------------------
+# ---------------------------------------------------
 # USER INPUTS
-# -----------------------------
+# ---------------------------------------------------
 
 patient_name = st.text_input("Patient Name")
 
 Diastolic_BP = st.slider(
-    "Enter Your Diastolic BP",
+    "Enter Diastolic BP",
     50,
     150
 )
 
 BMI = st.slider(
-    "Enter Your BMI",
+    "Enter BMI",
     15,
     50
 )
 
 Systolic_BP = st.slider(
-    "Enter Your Systolic BP",
+    "Enter Systolic BP",
     80,
     250
 )
 
 Smoker = st.selectbox(
-    "Are you a Smoker?",
+    "Are You a Smoker?",
     ["No", "Yes"]
 )
 
 Activity = st.selectbox(
-    "Select Your Activity Level",
+    "Select Activity Level",
     [
         "Very Active",
         "Moderately Active",
@@ -175,19 +186,19 @@ Activity = st.selectbox(
 )
 
 Age = st.slider(
-    "Select Your Age",
+    "Enter Age",
     18,
     80
 )
 
 Gender = st.selectbox(
-    "Select Your Gender",
+    "Select Gender",
     ["Male", "Female"]
 )
 
-# -----------------------------
-# ENCODING INPUTS
-# -----------------------------
+# ---------------------------------------------------
+# INPUT ENCODING
+# ---------------------------------------------------
 
 Smoker_value = 1 if Smoker == "Yes" else 0
 
@@ -202,13 +213,13 @@ activity_map = {
 
 Activity_value = activity_map[Activity]
 
-# -----------------------------
+# ---------------------------------------------------
 # PREDICTION
-# -----------------------------
+# ---------------------------------------------------
 
-if st.button('Predict BP'):
+if st.button("Predict BP"):
 
-    predicted_BP = model.predict(
+    prediction = model.predict(
         scaler.transform(
             [[
                 Diastolic_BP,
@@ -222,42 +233,48 @@ if st.button('Predict BP'):
         )
     )[0]
 
-    # BP Categories
-    if predicted_BP == 0:
+    # -----------------------------------------------
+    # CATEGORY & ADVICE
+    # -----------------------------------------------
 
-        category = 'Normal'
+    if prediction == 0:
 
-        advise = """
-        Your BP level appears normal.
-        Maintain a healthy lifestyle,
-        regular exercise, and balanced diet.
+        category = "Normal"
+
+        advice = """
+        Your blood pressure appears normal.
+        Maintain healthy eating habits,
+        regular exercise, and proper hydration.
         """
 
-    elif predicted_BP == 1:
+    elif prediction == 1:
 
-        category = 'Elevated'
+        category = "Elevated"
 
-        advise = """
-        Your BP level is elevated.
+        advice = """
+        Your blood pressure is elevated.
         Reduce salt intake, improve diet,
         and increase physical activity.
         """
 
     else:
 
-        category = 'High'
+        category = "High"
 
-        advise = """
-        Your BP level is high.
-        Medical consultation and lifestyle
+        advice = """
+        Your blood pressure is high.
+        Clinical consultation and lifestyle
         modification are strongly recommended.
         """
 
-    # Display Results
+    # -----------------------------------------------
+    # OUTPUT
+    # -----------------------------------------------
+
     st.success(f"""
     Patient: {patient_name}
 
-    Predicted BP Category: {category}
+    BP Classification: {category}
     """)
 
-    st.warning(f"Clinical Advice: {advise}")
+    st.warning(f"Clinical Advice: {advice}")
