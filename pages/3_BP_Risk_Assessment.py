@@ -122,10 +122,10 @@ x_train_s = scaler.fit_transform(x_train)
 @st.cache_resource
 def train_model():
 
-    model = LogisticRegression(
+     model = LogisticRegression(
         C=0.1,
-        penalty='l1',
-        solver='liblinear',
+        penalty='l2',
+        solver='lbfgs',
         max_iter=1000
     )
 
