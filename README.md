@@ -147,8 +147,7 @@ The BP Risk Assessment module predicts blood pressure risk categories based on p
 LogisticRegression(
     C=0.1,
     penalty='l1',
-    solver='lbfgs',
-    max_iter=1000
+    solver='liblinear',
 )
 ```
 
@@ -158,21 +157,6 @@ Logistic Regression was selected because:
 - the problem involves multiclass classification
 - the model is computationally efficient
 - the model performs well on structured healthcare datasets
-
-## Regularization and Overfitting Control
-The BP model uses:
-
-```text
-L2 Regularization
-```
-
-with:
-
-```text
-C = 0.1
-```
-
-This helps reduce overfitting by penalizing excessively large model coefficients.
 
 ## Data Preprocessing
 The BP model also included:
