@@ -5,7 +5,7 @@ Each model was evaluated carefully using appropriate performance metrics to ensu
 
 ---
 
-# 1. Weight Assessment Model ⚖️
+# 1. Weight Assessment Model
 
 ## Objective
 The Weight Assessment module estimates a patient’s height based on weight measurements.
@@ -119,7 +119,7 @@ This is expected because BMI is mathematically related to height and weight, mak
 
 ---
 
-# 3. Blood Pressure (BP) Risk Assessment ❤️
+# 3. Blood Pressure (BP) Risk Assessment
 
 ## Objective
 The BP Risk Assessment module predicts blood pressure risk categories based on physiological and lifestyle-related variables.
@@ -146,7 +146,7 @@ The BP Risk Assessment module predicts blood pressure risk categories based on p
 ```python
 LogisticRegression(
     C=0.1,
-    penalty='l2',
+    penalty='l1',
     solver='lbfgs',
     max_iter=1000
 )
@@ -202,11 +202,6 @@ The use of regularization, preprocessing, and feature scaling improves generaliz
 
 ## R² Score
 The R² score measures how much variability in the target variable is explained by the model.
-
-\[
-R^2 = 1 - \frac{SS_{res}}{SS_{tot}}
-\]
-
 - Values closer to 1 indicate stronger predictive performance.
 - Values closer to 0 indicate weak predictive ability.
 
@@ -215,11 +210,6 @@ R^2 = 1 - \frac{SS_{res}}{SS_{tot}}
 ## Mean Squared Error (MSE)
 
 MSE measures the average squared difference between predicted and actual values.
-
-\[
-MSE = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2
-\]
-
 Lower values indicate better model performance.
 
 ---
@@ -227,11 +217,6 @@ Lower values indicate better model performance.
 ## Mean Absolute Error (MAE)
 
 MAE measures the average absolute prediction error.
-
-\[
-MAE = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|
-\]
-
 Smaller values indicate more accurate predictions.
 
 ---
