@@ -53,16 +53,16 @@ df['Gender_'] = df['Gender'].apply(
 def activity_score(activity):
 
     if activity == 'Very Active':
-        return 0
+        return 3
 
     elif activity == 'Moderately Active':
-        return 1
-
-    elif activity == 'Lightly Active':
         return 2
 
+    elif activity == 'Lightly Active':
+        return 1
+
     else:
-        return 3
+        return 0
 
 df['Activity'] = df['Activity_Level'].apply(activity_score)
 
